@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,4 +46,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // Méthodes pour vérifier le rôle
+public function isAdmin(): bool
+{
+    return $this->role === 'admin';
+}
+
+public function isTeacher(): bool
+{
+    return $this->role === 'teacher';
+}
 }
