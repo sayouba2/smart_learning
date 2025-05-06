@@ -56,4 +56,35 @@ public function isTeacher(): bool
 {
     return $this->role === 'teacher';
 }
+
+// Pour les enseignants
+public function courses() {
+    return $this->hasMany(Course::class, 'teacher_id');
+}
+
+// Pour les étudiants
+public function enrolledCourses() {
+    return $this->belongsToMany(Course::class, 'enrollments')
+                ->withPivot('completed_at');
+}
+
+public function completedCourses()
+{
+    return $this->belongsToMany(Course::class, 'enrollments')
+                ->wherePivotNotNull('completed_at')
+                ->withPivot('completed_at');
+}
+
+public function inProgressCourses()
+{
+    return $this->belongsToMany(Course::class, 'enrollments')
+                ->wherePivotNull('completed_at');
+}
+
+public function enrollments()
+{
+    return $this->belongsToMany(User::class, 'enrollments')
+                ->withPivot('completed_at')
+                ->withTimestamps();
+}
 }

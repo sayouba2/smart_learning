@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,5 +38,37 @@ Route::middleware(['auth', 'role:student'])->group(function () {
     Route::get('/dashboard', [StudentController::class, 'show']);
 });
 
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
 
+
+Route::middleware(['auth', 'role:student'])->group(function () {
+    Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'enroll'])
+         ->name('enroll');
+         
+    Route::post('/courses/{course}/complete', [EnrollmentController::class, 'complete'])
+         ->name('courses.complete');
+});
+
+Route::middleware(['auth', 'role:student'])->prefix('student')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Student\DashboardController::class, 'index'])
+         ->name('student.dashboard');
+});
+
+// Ajoute ceci dans web.php
+Route::get('/dashboard', function () {
+    $role = Auth::user()->role;
+
+    return match ($role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'teacher' => redirect()->route('teacher.dashboard'),
+        'student' => redirect()->route('student.dashboard'),
+        default => abort(403)
+    };
+})->middleware(['auth'])->name('dashboard');
+
+// Route pour afficher un cours spécifique
+Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+
+// Dans routes/web.php
+require __DIR__.'/teacher.php';
 require __DIR__.'/auth.php';
