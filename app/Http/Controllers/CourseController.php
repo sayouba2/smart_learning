@@ -50,8 +50,14 @@ class CourseController extends Controller
         }
 
         $courses = $query->paginate(9);
+        
+        // Get enrolled course IDs for the authenticated user
+        $enrolledCourseIds = [];
+        if (auth()->check()) {
+            $enrolledCourseIds = auth()->user()->enrollments()->pluck('course_id')->toArray();
+        }
 
-        return view('courses.index', compact('courses'));
+        return view('courses.index', compact('courses', 'enrolledCourseIds'));
     }
 
     /**

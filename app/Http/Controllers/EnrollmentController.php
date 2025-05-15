@@ -71,4 +71,13 @@ class EnrollmentController extends Controller
         return redirect()->route('enrollments.my-courses')
             ->with('success', 'Vous vous êtes désinscrit du cours avec succès.');
     }
+
+    /**
+     * Store a new enrollment.
+     */
+    public function store(Course $course)
+    {
+        // Reuse the same logic as the enroll method
+        return $this->enroll($course);
+    }
 }

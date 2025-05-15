@@ -46,45 +46,87 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    /**
+     * Check if the user has the given role
+     * 
+     * @param string|array $roles Role(s) to check
+     * @return bool
+     */
+    public function hasRole($roles): bool
+    {
+        if (is_string($roles)) {
+            return $this->role === $roles;
+        }
+        
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+        
+        return false;
+    }
+    
     // Méthodes pour vérifier le rôle
-public function isAdmin(): bool
-{
-    return $this->role === 'admin';
-}
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
-public function isTeacher(): bool
-{
-    return $this->role === 'teacher';
-}
+    public function isTeacher(): bool
+    {
+        return $this->role === 'teacher';
+    }
 
-// Pour les enseignants
-public function courses() {
-    return $this->hasMany(Course::class, 'teacher_id');
-}
+    // Pour les enseignants
+    public function courses() {
+        return $this->hasMany(Course::class, 'teacher_id');
+    }
 
-// Pour les étudiants
-public function enrolledCourses() {
-    return $this->belongsToMany(Course::class, 'enrollments')
-                ->withPivot('completed_at');
-}
+    // Pour les étudiants
+    public function enrolledCourses() {
+        return $this->belongsToMany(Course::class, 'enrollments')
+                    ->withPivot('completed_at');
+    }
 
-public function completedCourses()
-{
-    return $this->belongsToMany(Course::class, 'enrollments')
-                ->wherePivotNotNull('completed_at')
-                ->withPivot('completed_at');
-}
+    public function completedCourses()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments')
+                    ->wherePivotNotNull('completed_at')
+                    ->withPivot('completed_at');
+    }
 
-public function inProgressCourses()
-{
-    return $this->belongsToMany(Course::class, 'enrollments')
-                ->wherePivotNull('completed_at');
-}
+    public function inProgressCourses()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments')
+                    ->wherePivotNull('completed_at');
+    }
 
-public function enrollments()
-{
-    return $this->belongsToMany(User::class, 'enrollments')
-                ->withPivot('completed_at')
-                ->withTimestamps();
-}
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class, 'student_id');
+    }
+
+    /**
+     * Get certificates earned by the user
+     */
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class, 'user_id');
+    }
+    
+    /**
+     * Get completed lessons by the user
+     */
+    public function completedLessons()
+    {
+        return $this->hasMany(LessonCompletion::class, 'user_id');
+    }
+
+    /**
+     * Scope a query to only include users of a given role
+     */
+    public function scopeRole($query, $role)
+    {
+        return $query->where('role', $role);
+    }
 }

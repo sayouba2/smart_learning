@@ -15,6 +15,8 @@ class CreateEnrollmentsTable extends Migration
             $table->boolean('completed')->default(false);
             $table->integer('progress')->default(0);
             $table->timestamp('completed_at')->nullable();
+            $table->decimal('amount', 8, 2)->nullable();
+            $table->string('payment_status')->default('pending');
             $table->timestamps();
 
             $table->unique(['student_id', 'course_id']);

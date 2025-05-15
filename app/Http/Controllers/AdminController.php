@@ -15,15 +15,17 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $stats = [
-            'total_users' => User::count(),
-            'total_courses' => Course::count(),
-            'total_teachers' => User::where('role', 'teacher')->count(),
-            'total_students' => User::where('role', 'student')->count(),
-            'recent_courses' => Course::with('teacher')->latest()->take(5)->get(),
-            'recent_users' => User::latest()->take(5)->get(),
-        ];
-
-        return view('admin.dashboard', compact('stats'));
+        // Récupérer des statistiques pour le tableau de bord admin
+        $totalUsers = User::count();
+        $totalCourses = Course::count();
+        $recentUsers = User::latest()->take(5)->get();
+        $pendingCourses = Course::where('is_published', false)->count();
+        
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalCourses',
+            'recentUsers',
+            'pendingCourses'
+        ));
     }
 } 

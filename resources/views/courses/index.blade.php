@@ -1,4 +1,4 @@
-@extends('layouts.course') {{-- ou student.blade.php si spécifique --}}
+@extends('layouts.app') {{-- ou student.blade.php si spécifique --}}
 
 @section('content')
 <div class="course-listing-container">

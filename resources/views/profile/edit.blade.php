@@ -1,29 +1,36 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
+@section('content')
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ __('Profile Information') }}</h4>
+                </div>
+                <div class="card-body">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ __('Update Password') }}</h4>
+                </div>
+                <div class="card-body">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">{{ __('Delete Account') }}</h4>
+                </div>
+                <div class="card-body">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

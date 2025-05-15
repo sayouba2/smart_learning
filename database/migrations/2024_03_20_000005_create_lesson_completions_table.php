@@ -12,6 +12,8 @@ class CreateLessonCompletionsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
+            $table->foreignId('course_id')->nullable()->constrained()->onDelete('cascade');
+            $table->timestamp('completed_at')->useCurrent();
             $table->timestamps();
 
             $table->unique(['user_id', 'lesson_id']);

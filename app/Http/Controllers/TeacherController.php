@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
@@ -16,11 +17,11 @@ class TeacherController extends Controller
     public function dashboard()
     {
         $stats = [
-            'total_courses' => auth()->user()->courses()->count(),
-            'total_students' => auth()->user()->courses()->withCount('enrollments')->get()->sum('enrollments_count'),
-            'average_rating' => auth()->user()->courses()->withAvg('ratings', 'rating')->get()->avg('ratings_avg_rating'),
-            'recent_courses' => auth()->user()->courses()->latest()->take(5)->get(),
-            'recent_enrollments' => auth()->user()->courses()->with(['enrollments.user'])->latest()->take(5)->get(),
+            'total_courses' => Auth::user()->courses()->count(),
+            'total_students' => Auth::user()->courses()->withCount('enrollments')->get()->sum('enrollments_count'),
+            'average_rating' => Auth::user()->courses()->withAvg('ratings', 'rating')->get()->avg('ratings_avg_rating'),
+            'recent_courses' => Auth::user()->courses()->latest()->take(5)->get(),
+            'recent_enrollments' => Auth::user()->courses()->with(['enrollments.user'])->latest()->take(5)->get(),
         ];
 
         return view('teacher.dashboard', compact('stats'));

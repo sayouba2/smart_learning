@@ -13,6 +13,9 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,8 +23,14 @@ use Illuminate\Support\Facades\Route;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+require __DIR__.'/auth.php';
+
 
 // Public routes
+Route::get('/', function () {
+    return view('welcome');
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -43,6 +52,7 @@ Route::middleware('auth')->group(function () {
 
     // Student routes
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+    Route::get('/student/dashboard', [DashboardController::class, 'index'])->name('student.dashboard');
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('enrollments.store');
     Route::get('/my-courses', [EnrollmentController::class, 'index'])->name('enrollments.index');
     Route::get('/my-courses/{course}', [EnrollmentController::class, 'show'])->name('enrollments.show');
@@ -90,6 +100,9 @@ Route::middleware(['auth', 'role:student'])->group(function () {
     Route::delete('courses/{course}/unenroll', [EnrollmentController::class, 'unenroll'])->name('courses.unenroll');
     Route::get('my-courses', [EnrollmentController::class, 'myCourses'])->name('enrollments.my-courses');
     Route::get('courses/{course}/progress', [EnrollmentController::class, 'showProgress'])->name('enrollments.progress');
+    
+    // Add the missing enroll route
+    Route::post('courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('enroll');
 });
 
 // Paiements
@@ -117,3 +130,5 @@ Route::middleware(['auth', 'role:student'])->group(function () {
     Route::put('courses/{course}/rate', [RatingController::class, 'update'])->name('courses.rate.update');
     Route::delete('courses/{course}/rate', [RatingController::class, 'destroy'])->name('courses.rate.destroy');
 });
+
+
