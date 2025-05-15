@@ -18,12 +18,18 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
-
-        // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle
-        if (!$user || !in_array($user->role, $roles)) {
-            abort(403, 'Accès non autorisé');
+    
+        // Si l'utilisateur n'est pas connecté, redirige vers la page de login
+        if (!$user) {
+            return redirect()->route('login');
         }
-
+    
+        // Si l'utilisateur n'a pas le bon rôle, redirige vers une page d'accès refusé
+        if (!in_array($user->role, $roles)) {
+            return redirect()->route('access.denied'); // Remplace par une route d'erreur spécifique si tu en as une
+        }
+    
         return $next($request);
-}
+    }
+    
 }

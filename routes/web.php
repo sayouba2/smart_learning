@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Livewire\TeacherCourseStats;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\AdminController;
@@ -48,6 +49,9 @@ Route::middleware(['auth', 'role:student'])->group(function () {
     Route::post('/courses/{course}/complete', [EnrollmentController::class, 'complete'])
          ->name('courses.complete');
 });
+
+Route::get('/teacher/courses', [CourseController::class, 'index'])->name('teacher.courses.index');
+
 
 Route::middleware(['auth', 'role:student'])->prefix('student')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Student\DashboardController::class, 'index'])

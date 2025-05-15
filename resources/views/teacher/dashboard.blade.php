@@ -91,16 +91,16 @@
             </div>
         </div>
     </div>
-
     <!-- Graphique (optionnel) -->
-    <div class="card chart-card mt-4">
-        <div class="card-header">
-            <h3>Statistiques des inscriptions</h3>
-        </div>
-        <div class="card-body">
-            <canvas id="enrollmentsChart" height="100"></canvas>
-        </div>
+    <div class="container mx-auto py-6 px-4">
+        {{-- ... autres sections ... --}}
+        
+        @livewire('teacher-course-stats')
+        @livewire('student-stats')
+    
+        {{-- ... autres sections ... --}}
     </div>
+    
 </div>
 
 @push('styles')

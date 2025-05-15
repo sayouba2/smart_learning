@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class CourseController extends Controller
 {
 
-    public function __construct()
+   /* public function __construct()
 {
     $this->authorizeResource(Course::class, 'course');
 }

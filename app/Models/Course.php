@@ -26,7 +26,7 @@ class Course extends Model
 // app/Models/Course.php
 public function students()
 {
-    return $this->belongsToMany(User::class, 'enrollments')
+    return $this->belongsToMany(User::class, 'enrollments','course_id', 'user_id')
                 ->withPivot('completed_at')
                 ->withTimestamps();
 }
