@@ -99,7 +99,7 @@ class CourseController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Course $course) {
-        $this->authorize('update', $course);
+        //$this->authorize('update', $course);
         return view('teacher.courses.edit', compact('course'));
     }
     /**

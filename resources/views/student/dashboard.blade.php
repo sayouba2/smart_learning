@@ -12,14 +12,40 @@
                 <div class="card-body">
                     @forelse($inProgressCourses as $course)
                     <div class="course-item mb-3 p-3 border rounded">
-                        <h5>{{ $course->title }}</h5>
-                        <p>Enseignant : {{ $course->teacher->name }}</p>
-                        <a href="{{ route('courses.show', $course) }}" class="btn btn-sm btn-outline-primary">
-                            Continuer
-                        </a>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5>{{ $course->title }}</h5>
+                                <p class="mb-1"><small>Enseignant : {{ $course->teacher->name }}</small></p>
+                                <p class="mb-1"><small>Inscrit le : {{ $course->pivot->created_at }}</small></p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ route('student.courses.show', $course) }}" 
+                                   class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <form action="{{ route('student.courses.complete', $course) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-success" 
+                                            title="Marquer comme terminé">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ rand(30, 90) }}%"></div>
+                        </div>
                     </div>
                     @empty
-                    <p class="empty-state">Aucun cours en cours de suivi</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                        <p class="empty-state">Aucun cours en cours de suivi</p>
+                        <a href="{{ route('student.courses.available') }}" 
+                           class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i> Trouver un cours
+                        </a>
+                    </div>
                     @endforelse
                 </div>
             </div>
@@ -35,10 +61,34 @@
                     @forelse($completedCourses as $course)
                     <div class="course-item mb-3 p-3 border rounded">
                         <h5>{{ $course->title }}</h5>
-                        <p>Terminé le : {{ $course->pivot->completed_at->format('d/m/Y') }}</p>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="mb-1"><small>Enseignant : {{ $course->teacher->name }}</small></p>
+                                @if($course->pivot->completed_at)
+                                <p class="mb-1"><small>Terminé le : {{ $course->pivot->completed_at }}</small></p>
+                                @else
+                                <p class="mb-1"><small class="text-warning">En attente de validation</small></p>
+                                @endif
+                            </div>
+                            <div>
+                                <a href="{{ route('student.courses.show', $course) }}" 
+                                   class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @if($course->pivot->completed_at)
+                                <a href="#" class="btn btn-sm btn-warning" 
+                                   title="Télécharger le certificat">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                     @empty
-                    <p class="empty-state">Aucun cours terminé</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                        <p class="empty-state">Aucun cours terminé</p>
+                    </div>
                     @endforelse
                 </div>
             </div>
@@ -50,209 +100,75 @@
         <div class="col-12">
             <div class="card certificate-card">
                 <div class="card-header bg-info text-white">
-                    <h3><i class="fas fa-medal me-2"></i>Mes Certificats</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0"><i class="fas fa-medal me-2"></i>Mes Certificats</h3>
+                        <span class="badge bg-white text-info">{{ count($certificates) }}</span>
+                    </div>
                 </div>
                 <div class="card-body">
+                    @if(count($certificates) > 0)
                     <div class="table-responsive">
-                        <table class="table">
-                            <thead>
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Nom du Cours</th>
-                                    <th>Date d'obtention</th>
-                                    <th>Certificat</th>
+                                    <th width="40%">Cours</th>
+                                    <th width="25%">Enseignant</th>
+                                    <th width="20%">Date d'obtention</th>
+                                    <th width="15%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($certificates as $certificate)
+                                @foreach($certificates as $certificate)
                                 <tr>
-                                    <td>{{ $certificate['course_name'] }}</td>
-                                    <td>{{ $certificate['completed_at'] }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-outline-secondary certificate-btn">
-                                            <i class="fas fa-file-pdf me-1"></i>{{ $certificate['certificate_id'] }} (PDF)
+                                        <strong>{{ $certificate['course_name'] }}</strong>
+                                    </td>
+                                    <td>{{ $certificate['teacher_name'] }}</td>
+                                    <td>{{ $certificate['completed_at'] ?? 'Date non disponible' }}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-file-pdf me-1"></i> PDF
                                         </a>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="3" class="text-center empty-state">Aucun certificat obtenu</td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
+                    @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-pdf fa-3x text-muted mb-3"></i>
+                        <p class="empty-state">Aucun certificat disponible</p>
+                        <p class="text-muted small">Les certificats apparaissent ici après avoir terminé un cours</p>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @push('styles')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-    :root {
-        --primary: #4361ee;
-        --primary-light: #4895ef;
-        --primary-dark: #3a0ca3;
-        --success: #4cc9f0;
-        --success-light: #90e0ef;
-        --success-dark: #0077b6;
-        --info: #4895ef;
-        --info-light: #a8dadc;
-        --info-dark: #457b9d;
-        --warning: #f72585;
-        --secondary: #6c757d;
-        --light: #f8f9fa;
-        --dark: #212529;
+    .course-card .card-header {
+        border-radius: 0.375rem 0.375rem 0 0 !important;
     }
-    
-    body {
-        background-color: #f5f7fa;
-        font-family: 'Poppins', sans-serif;
-    }
-    
-    .student-dashboard {
-        padding-top: 20px;
-        padding-bottom: 40px;
-    }
-    
-    /* Card Styling */
-    .card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        overflow: hidden;
-        margin-bottom: 20px;
+    .course-item {
         transition: transform 0.2s;
     }
-    
-    .card:hover {
-        transform: translateY(-3px);
-    }
-    
-    .card-header {
-        padding: 18px 25px;
-        border-bottom: none;
-    }
-    
-    .card-header h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin: 0;
-        display: flex;
-        align-items: center;
-    }
-    
-    .card-body {
-        padding: 25px;
-    }
-    
-    /* Course Item Styling */
-    .course-item {
-        background-color: white;
-        border-radius: 8px;
-        border-color: #eaeaea !important;
-        transition: all 0.3s;
-        position: relative;
-    }
-    
     .course-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-        border-color: var(--primary-light) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-    
-    .course-item h5 {
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 10px;
-        font-size: 1.1rem;
-    }
-    
-    .course-item p {
-        color: var(--secondary);
-        margin-bottom: 15px;
-        font-size: 0.9rem;
-    }
-    
-    /* Button Styling */
-    .btn-outline-primary {
-        color: var(--primary);
-        border-color: var(--primary);
-        border-radius: 6px;
-        font-weight: 500;
-        padding: 6px 15px;
-        transition: all 0.3s;
-    }
-    
-    .btn-outline-primary:hover {
-        background-color: var(--primary);
-        color: white;
-        box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
-    }
-    
-    .btn-outline-secondary {
-        color: var(--secondary);
-        border-color: #dee2e6;
-        border-radius: 6px;
-        font-weight: 500;
-        padding: 6px 15px;
-        transition: all 0.3s;
-    }
-    
-    .btn-outline-secondary:hover {
-        background-color: var(--secondary);
-        color: white;
-        border-color: var(--secondary);
-    }
-    
-    /* Certificate Table Styling */
-    .table {
-        margin-bottom: 0;
-    }
-    
-    .table thead th {
-        border-top: none;
-        border-bottom-width: 1px;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: var(--secondary);
-        padding: 12px 20px;
-    }
-    
-    .table tbody td {
-        padding: 15px 20px;
-        vertical-align: middle;
-        border-color: #eaeaea;
-    }
-    
-    .certificate-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Headers Color Customization */
-    .in-progress-card .card-header {
-        background: linear-gradient(45deg, var(--primary), var(--primary-light)) !important;
-    }
-    
-    .completed-card .card-header {
-        background: linear-gradient(45deg, var(--success-dark), var(--success)) !important;
-    }
-    
-    .certificate-card .card-header {
-        background: linear-gradient(45deg, var(--info-dark), var(--info)) !important;
-    }
-    
-    /* Empty State */
     .empty-state {
-        text-align: center;
         color: #6c757d;
-        padding: 20px;
         font-style: italic;
+    }
+    .certificate-btn {
+        transition: all 0.2s;
+    }
+    .certificate-btn:hover {
+        background-color: #0dcaf0;
+        color: white !important;
     }
 </style>
 @endpush

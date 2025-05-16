@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Livewire\TeacherCourseStats;
+use App\Http\Controllers\Teacher\{
+    DashboardController,};
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\AdminController;
@@ -29,9 +31,29 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'show']);
 });
 
-// Pour les enseignants seulement
-Route::middleware(['auth', 'role:teacher'])->group(function () {
-    Route::get('/teacher/dashboard', [TeacherController::class, 'show']);
+/*--------------------
+| Routes Enseignant
+|-------------------*/
+Route::middleware(['auth', 'role:teacher'])->name('teacher.')->group(function () {
+    
+    // Dashboard
+    Route::get('/teacher/dashboard', [DashboardController::class, 'index'])
+         ->name('dashboard');
+    
+    // CRUD Cours
+    Route::resource('teacher/courses', CourseController::class)->names([
+        'index'   => 'courses.index',
+        'create'  => 'courses.create',
+        'store'   => 'courses.store',
+        'show'    => 'courses.show', 
+        'edit'    => 'courses.edit',
+        'update'  => 'courses.update',
+        'destroy' => 'courses.destroy'
+    ]);
+    
+    // Statistiques
+    Route::get('/teacher/courses/{course}/stats', [DashboardController::class, 'stats'])
+         ->name('courses.stats');
 });
 
 // Pour les étudiants seulement
@@ -73,6 +95,16 @@ Route::get('/dashboard', function () {
 // Route pour afficher un cours spécifique
 Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
-// Dans routes/web.php
-require __DIR__.'/teacher.php';
+// routes pour le dashboard etudiant
+Route::middleware(['auth', 'role:student'])->name('student.')->prefix('student')->group(function () {
+    Route::get('/courses', [\App\Http\Controllers\Student\CourseController::class, 'myCourses'])
+         ->name('courses'); // => route('student.courses')
+         
+    Route::get('/courses/{course}', [\App\Http\Controllers\Student\CourseController::class, 'show'])
+         ->name('courses.show');
+
+    Route::post('/courses/{course}/complete', [\App\Http\Controllers\Student\CourseController::class, 'complete'])
+         ->name('courses.complete');
+});
+
 require __DIR__.'/auth.php';

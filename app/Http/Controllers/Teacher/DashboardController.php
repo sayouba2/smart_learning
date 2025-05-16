@@ -11,18 +11,30 @@ class DashboardController extends Controller
     // app/Http/Controllers/Teacher/DashboardController.php
 public function index()
 {
-    $courses = Auth::user()->courses()
-                  ->withCount('students')
-                  ->with('category')
-                  ->latest()
-                  ->get();
-
-    $stats = [
-        'total_courses' => $courses->count(),
-        'total_students' => $courses->sum('students_count'),
-        'free_courses' => $courses->where('price', 0)->count(),
-    ];
-
-    return view('teacher.dashboard', compact('courses', 'stats'));
+    $user = Auth::user();
+    
+    return view('student.dashboard', [
+        'inProgressCourses' => $user->enrolledCourses()
+            ->wherePivotNull('completed_at')
+            ->with('teacher')
+            ->latest('enrollments.created_at')
+            ->get(),
+            
+        'completedCourses' => $user->enrolledCourses()
+            ->wherePivotNotNull('completed_at')
+            ->with('teacher')
+            ->latest('enrollments.completed_at')
+            ->get(),
+            
+        'certificates' => $user->certificates()->with('course.teacher')->get()
+            ->map(function ($cert) {
+                return [
+                    'course_name' => $cert->course->title,
+                    'teacher_name' => $cert->course->teacher->name,
+                    'completed_at' => $cert->created_at->format('d/m/Y'),
+                    'certificate_id' => 'CERT-'.strtoupper(Str::random(8))
+                ];
+            })
+    ]);
 }
 }
