@@ -52,6 +52,12 @@ public function isAdmin(): bool
     return $this->role === 'admin';
 }
 
+public function certificates()
+{
+    return $this->hasMany(Certificate::class);
+}
+
+
 public function isTeacher(): bool
 {
     return $this->role === 'teacher';

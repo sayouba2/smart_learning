@@ -11,11 +11,16 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ContactController;
+// Page d'accueil publique
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Liste des cours publics
+Route::get('/courses', [CourseController::class, 'publicIndex'])->name('courses.index');
 
+Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 /* Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard'); */
@@ -106,5 +111,12 @@ Route::middleware(['auth', 'role:student'])->name('student.')->prefix('student')
     Route::post('/courses/{course}/complete', [\App\Http\Controllers\Student\CourseController::class, 'complete'])
          ->name('courses.complete');
 });
+
+
+
+Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/courses/available', [CourseController::class, 'available'])->name('courses.available');
+});
+
 
 require __DIR__.'/auth.php';
