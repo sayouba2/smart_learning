@@ -129,14 +129,11 @@
             <div class="section-header">
                 <h2><i class="fas fa-chart-line me-2"></i> Statistiques</h2>
             </div>
-            <div class="stats-container">
-                <div class="chart-container">
-                    @livewire('teacher-course-stats')
-                </div>
-                <div class="chart-container">
-                    @livewire('student-stats')
-                </div>
+            <div class="bg-white shadow rounded-lg p-4 my-4">
+              <h2 class="text-xl font-semibold mb-4"></h2>
+              <canvas id="studentsChart" height="100"></canvas>
             </div>
+
         </div>
     </div>
 
@@ -671,4 +668,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 </script>
+
+    <script src="{{ asset('vendor/chart.js/Chart.bundle.min.js') }}"></script>
+    <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
+    <script>
+    const ctx = document.getElementById('studentsChart').getContext('2d');
+
+    const studentsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($months) !!},
+            datasets: [
+                {
+                    label: 'Étudiants inscrits',
+                    data: {!! json_encode($studentCounts) !!},
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: false,
+                    tension: 0.3,
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                },
+                {
+                    label: 'Cours créés',
+                    data: {!! json_encode($courseCounts) !!},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                    tension: 0.3,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+
+    </script>
 @endsection
