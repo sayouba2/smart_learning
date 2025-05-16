@@ -13,7 +13,7 @@
                     <i class="fas fa-map-marker-alt"></i>
                     <div>
                         <h4>Adresse</h4>
-                        <p>123 Rue de l'Exemple, 75000 Paris</p>
+                        <p>14 rue mayssira Issil Marrakech</p>
                     </div>
                 </div>
                 
@@ -21,7 +21,7 @@
                     <i class="fas fa-phone-alt"></i>
                     <div>
                         <h4>Téléphone</h4>
-                        <p>+33 1 23 45 67 89</p>
+                        <p>+212 623113083</p>
                     </div>
                 </div>
                 
