@@ -69,7 +69,39 @@
                     </div>
                 </div>
             </div>
-            
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="h-48 bg-indigo-100 flex items-center justify-center">
+                    <i class="fas fa-book-open text-5xl text-indigo-500"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-semibold">Introduction à Laravel</h3>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">Nouveau</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">Maîtrisez les bases du framework PHP Laravel.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-indigo-600 font-semibold">Gratuit</span>
+                        <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800">En savoir plus →</a>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="h-48 bg-indigo-100 flex items-center justify-center">
+                    <i class="fas fa-book-open text-5xl text-indigo-500"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-semibold">Introduction à Laravel</h3>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">Nouveau</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">Maîtrisez les bases du framework PHP Laravel.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-indigo-600 font-semibold">Gratuit</span>
+                        <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800">En savoir plus →</a>
+                    </div>
+                </div>
+            </div>
             <!-- Ajoutez d'autres cartes de cours ici -->
         </div>
     </div>

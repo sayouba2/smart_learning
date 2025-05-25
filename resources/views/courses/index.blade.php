@@ -67,24 +67,40 @@
                         @endif
                     </div>
                     
-                    @auth
-                        @if(in_array($course->id, $enrolledCourseIds))
-                            <button class="enrolled-btn" disabled>
-                                <i class="fas fa-check-circle"></i> Inscrit
-                            </button>
-                        @else
-                            <form action="{{ route('enroll', $course->id) }}" method="POST" class="enroll-form">
-                                @csrf
-                                <button type="submit" class="enroll-btn">
-                                    <i class="fas fa-cart-plus"></i> S'inscrire
-                                </button>
-                            </form>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}" class="login-link">
-                            <i class="fas fa-lock"></i> Se connecter
+                    <div class="action-buttons">
+                        <!-- Bouton Voir le cours -->
+                        <a href="{{ route('courses.show', $course->id) }}" 
+                           class="view-btn"
+                           title="Voir les détails du cours">
+                            <i class="fas fa-eye"></i>
                         </a>
-                    @endauth
+                        
+                        @auth
+                            @if(in_array($course->id, $enrolledCourseIds))
+                                <!-- Bouton Générer certificat (visible seulement si inscrit) -->
+                                <a href="{{ route('student.certificate.generate', $course->id) }}" 
+                                   class="certificate-btn"
+                                   title="Générer un certificat">
+                                    <i class="fas fa-certificate"></i>
+                                </a>
+                                
+                                <button class="enrolled-btn" disabled>
+                                    <i class="fas fa-check-circle"></i> Inscrit
+                                </button>
+                            @else
+                                <form action="{{ route('enroll', $course->id) }}" method="POST" class="enroll-form">
+                                    @csrf
+                                    <button type="submit" class="enroll-btn">
+                                        <i class="fas fa-cart-plus"></i> S'inscrire
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="login-link">
+                                <i class="fas fa-lock"></i> Se connecter
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         @endforeach
@@ -111,6 +127,8 @@
     --light-color: #f8fafc;
     --gray-color: #94a3b8;
     --free-color: #10b981;
+    --view-color: #3b82f6;
+    --certificate-color: #10b981;
 }
 
 /* Animations */
@@ -309,6 +327,43 @@
     margin-left: 0.5rem;
 }
 
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.view-btn, .certificate-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.view-btn {
+    background-color: var(--view-color);
+}
+
+.view-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.certificate-btn {
+    background-color: var(--certificate-color);
+}
+
+.certificate-btn:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+}
+
 .enroll-btn, .enrolled-btn, .login-link {
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -357,6 +412,41 @@
 
 .login-link i {
     margin-right: 0.5rem;
+}
+
+/* Tooltip */
+[title] {
+    position: relative;
+}
+
+[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 10;
+    margin-bottom: 5px;
+}
+
+[title]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--dark-color);
+    z-index: 10;
 }
 
 /* Modal Styles */
@@ -409,6 +499,11 @@
     .page-title {
         font-size: 2rem;
     }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: flex-end;
+    }
 }
 
 @media (max-width: 480px) {
@@ -419,6 +514,16 @@
     .modal-content {
         width: 95%;
         padding: 1.5rem;
+    }
+    
+    .card-footer {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .price-container {
+        width: 100%;
+        justify-content: center;
     }
 }
 
@@ -451,8 +556,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Animation au survol des boutons
-    const enrollButtons = document.querySelectorAll('.enroll-btn');
-    enrollButtons.forEach(button => {
+    const buttons = document.querySelectorAll('.enroll-btn, .view-btn, .certificate-btn');
+    buttons.forEach(button => {
         button.addEventListener('mouseenter', () => {
             button.style.transform = 'translateY(-2px)';
             button.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
@@ -484,8 +589,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Simulation de chargement des détails du cours
     courseCards.forEach(card => {
         card.addEventListener('click', (e) => {
-            // Empêcher l'ouverture du modal si on clique sur un bouton
-            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) {
+            // Empêcher l'ouverture du modal si on clique sur un bouton ou lien
+            if (e.target.closest('button') || e.target.closest('a')) {
                 return;
             }
             

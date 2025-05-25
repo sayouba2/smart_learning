@@ -37,4 +37,23 @@ public function enrollments()
                 ->withPivot('completed_at')
                 ->withTimestamps();
 }
+
+public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
+public function resources()
+{
+    return $this->hasMany(Resource::class);
+}
+public function priceText()
+{
+    if ($this->price == 0 || is_null($this->price)) {
+        return 'Gratuit';
+    }
+
+    return number_format($this->price, 2, ',', ' ') . ' €';
+}
+
 }

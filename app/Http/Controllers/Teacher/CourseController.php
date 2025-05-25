@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class CourseController extends Controller
 {
 
-   /* public function __construct()
+    public function __construct()
 {
     $this->authorizeResource(Course::class, 'course');
 }
@@ -61,7 +61,7 @@ class CourseController extends Controller
     public function show(Course $course)
     {
         // Vérifie que l'enseignant est bien propriétaire du cours (via Policy)
-        $this->authorize('view', $course);
+        //$this->authorize('view', $course);
     
         // Charge les données nécessaires
         $course->load([

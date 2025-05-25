@@ -24,7 +24,7 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ route('home') }}" class="text-gray-700 hover:text-indigo-600 transition">Accueil</a>
                     <a href="{{ route('courses.index') }}" class="text-gray-700 hover:text-indigo-600 transition">Cours</a>
-                    <a href="#" class="text-gray-700 hover:text-indigo-600 transition">Fonctionnalités</a>
+                    <a href="{{ route('about') }}" class="text-gray-700 hover:text-indigo-600 transition">A propos</a>
                     <a href="{{ route('contact.show') }}" class="text-gray-700 hover:text-indigo-600 transition">Contact</a>
                 </div>
 

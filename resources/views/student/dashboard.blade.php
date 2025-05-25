@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <div class="certificate-footer">
-                        <a href="#" class="download-btn">
+                        <a href="{{ route('student.certificate.generate', ['course' => $certificate['course_id'] ?? $certificate['id'] ?? null]) }}" class="download-btn">
                             <i class="fas fa-file-pdf"></i> Télécharger
                         </a>
                         <a href="#" class="share-btn">
@@ -111,7 +111,7 @@
                 <div class="empty-state">
                     <i class="fas fa-book-open"></i>
                     <p>Aucun cours en progression</p>
-                    <a href="{{ route('student.courses.available') }}" class="browse-btn">
+                    <a href="{{ route('courses.index') }}" class="browse-btn">
                         <i class="fas fa-plus"></i> Parcourir les cours
                     </a>
                 </div>
@@ -151,7 +151,7 @@
                                     <i class="fas fa-eye"></i> Voir
                                 </a>
                                 @if($course->pivot->completed_at)
-                                <a href="#" class="action-btn download">
+                                <a href="{{ route('student.certificate.generate', ['course' => $certificate['course_id'] ?? $certificate['id'] ?? null]) }}" class="action-btn download">
                                     <i class="fas fa-download"></i> Certificat
                                 </a>
                                 @endif

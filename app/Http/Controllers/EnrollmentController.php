@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -32,7 +33,7 @@ class EnrollmentController extends Controller
     public function complete(Course $course)
     {
         // Autorisation
-        $this->authorize('complete', $course);
+        //Gate::authorize('complete', [$course]);
 
         Auth::user()->enrolledCourses()
               ->updateExistingPivot($course->id, ['completed_at' => now()]);

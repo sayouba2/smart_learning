@@ -1,22 +1,32 @@
 <?php
 
 namespace App\Http\Controllers\Student;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
-        
-        return view('student.dashboard', [
-            'completedCourses' => $user->completedCourses()->with('teacher')->get(),
-            'inProgressCourses' => $user->inProgressCourses()->with('teacher')->get(),
-            'certificates' => $this->getMockCertificates($user) // Temporaire
-        ]);
-    }
+public function index()
+{
+    $user = Auth::user();
+
+    $completedCourses = $user->completedCourses()
+                             ->with(['teacher', 'category'])
+                             ->get();
+
+    $inProgressCourses = $user->inProgressCourses()
+                              ->with('teacher')
+                              ->get();
+
+    return view('student.dashboard', [
+        'completedCourses' => $completedCourses,
+        'inProgressCourses' => $inProgressCourses,
+        'certificates' => $completedCourses // ✅ plus besoin de getMockCertificates
+    ]);
+}
+
 
     protected function getMockCertificates($user)
     {
@@ -24,9 +34,10 @@ class DashboardController extends Controller
         return $user->completedCourses->map(function ($course) {
             return [
                 'course_name' => $course->title,
-                'completed_at' => $course->pivot->completed_at->format('Y-m-d'),
+                'teacher_name' => $course->teacher->name ?? 'N/A',
+                'completed_at' => $course->pivot->completed_at,
                 'certificate_id' => 'CERT-' . strtoupper(Str::random(8))
             ];
         });
-    } 
+    }
 }

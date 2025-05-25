@@ -13,7 +13,7 @@ class CoursePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isTeacher();
     }
 
     /**
@@ -30,7 +30,7 @@ class CoursePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isTeacher();
     }
 
     /**

@@ -71,7 +71,17 @@ public function courses() {
 // Pour les étudiants
 public function enrolledCourses() {
     return $this->belongsToMany(Course::class, 'enrollments')
-                ->withPivot('completed_at');
+                ->withPivot('completed_at')
+                ->withTimestamps()
+                ->using(Enrollment::class); 
+}
+
+// Relation pour les leçons complétées
+public function completedLessons()
+{
+    return $this->belongsToMany(Lesson::class, 'lesson_completions')
+                ->withPivot('completed_at')
+                ->withTimestamps();
 }
 
 public function completedCourses()
@@ -93,4 +103,16 @@ public function enrollments()
                 ->withPivot('completed_at')
                 ->withTimestamps();
 }
+
+public function viewedLessons()
+{
+    return $this->belongsToMany(Lesson::class, 'lesson_views')
+                ->withTimestamps();
+}
+
+public function isStudent(): bool
+{
+    return $this->role === 'student';
+}
+
 }

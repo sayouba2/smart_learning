@@ -49,5 +49,22 @@ class CourseController extends Controller
             return redirect()->route('teacher.courses.index')->with('success', 'Cours créé avec succès !');
             
         }
+ public function show(Course $course)
+{
+    $course->load('resources'); // charge les ressources du cours
+
+    $enrollment = null;
+    if (Auth::check()) {
+        $enrollment = Auth::user()->enrollments()
+            ->where('course_id', $course->id)
+            ->first(); // peut être null si pas inscrit
+    }
+
+    $enrollmentCount = $course->enrollments()->count();
+
+   return view('courses.show', compact('course', 'enrollment', 'enrollmentCount'));
+}
+
+
 }
 
