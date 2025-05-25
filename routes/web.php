@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Student\CertificateController;
-use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\Teacher\{
     DashboardController,};
 use App\Http\Controllers\Teacher\{
@@ -17,6 +16,18 @@ use App\Http\Controllers\Teacher\{
     SettingController,
     SupportController,
     AnnouncementController
+};
+
+use App\Http\Controllers\Student\{
+    DashboardController as StudentDashboardController,
+    CourseController as StudentCourseController,
+    CertificateController as StudentCertificateController,
+    AssignmentController as StudentAssignmentController,
+    QuizController as StudentQuizController,
+    ScheduleController as StudentScheduleController,
+    ProgressController as StudentProgressController,
+    ForumController as StudentForumController,
+    ProfileController as StudentProfileController
 };
 
 use App\Http\Controllers\ProfileController;
@@ -258,5 +269,19 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::get('support', [SupportController::class, 'index'])->name('support');
 });
 
+
+
+Route::prefix('student')->name('student.')->middleware(['auth', 'student'])->group(function () {
+
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/courses', [StudentCourseController::class, 'index'])->name('courses');
+    Route::get('/certificates', [StudentCertificateController::class, 'index'])->name('certificates');
+    Route::get('/assignments', [StudentAssignmentController::class, 'index'])->name('assignments');
+    Route::get('/quizzes', [StudentQuizController::class, 'index'])->name('quizzes');
+    Route::get('/schedule', [StudentScheduleController::class, 'index'])->name('schedule');
+    Route::get('/progress', [StudentProgressController::class, 'index'])->name('progress');
+    Route::get('/forum', [StudentForumController::class, 'index'])->name('forum');
+    Route::get('/profile', [StudentProfileController::class, 'index'])->name('profile');
+});
 
 require __DIR__.'/auth.php';

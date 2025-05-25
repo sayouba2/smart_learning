@@ -24,7 +24,7 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ route('home') }}" class="text-gray-700 hover:text-indigo-600 transition">Accueil</a>
                     <a href="{{ route('courses.index') }}" class="text-gray-700 hover:text-indigo-600 transition">Cours</a>
-                    <a href="#" class="text-gray-700 hover:text-indigo-600 transition">Fonctionnalités</a>
+                    <a href="{{route('about')}}" class="text-gray-700 hover:text-indigo-600 transition">A propos</a>
                     <a href="{{ route('contact.show') }}" class="text-gray-700 hover:text-indigo-600 transition">Contact</a>
                 </div>
 
@@ -113,42 +113,42 @@
     </main>
 
     <!-- Pied de page -->
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Elearning</h3>
-                    <p class="text-gray-400">La plateforme d'apprentissage en ligne pour tous.</p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Navigation</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{{ route('home') }}" class="text-gray-400 hover:text-white">Accueil</a></li>
-                        <li><a href="{{ route('courses.index') }}" class="text-gray-400 hover:text-white">Cours</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Prix</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Légal</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Mentions légales</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">CGU</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Confidentialité</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
-                    <ul class="space-y-2">
-                        <li class="text-gray-400"><i class="fas fa-envelope mr-2"></i> contact@elearning.com</li>
-                        <li class="text-gray-400"><i class="fas fa-phone mr-2"></i> +212 623113083</li>
-                    </ul>
-                </div>
+<footer class="bg-white text-gray-800 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Elearning</h3>
+                <p class="text-gray-600">La plateforme <br> d'apprentissage en <br> ligne pour tous.</p>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>© {{ date('Y') }} Elearning. Tous droits réservés.</p>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Navigation</h4>
+                <ul class="space-y-2">
+                    <li><a href="{{ route('home') }}" class="text-gray-600 hover:text-indigo-600">Accueil</a></li>
+                    <li><a href="{{ route('courses.index') }}" class="text-gray-600 hover:text-indigo-600">Cours</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-indigo-600">Prix</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Légal</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-600 hover:text-indigo-600">Mentions légales</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-indigo-600">CGU</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-indigo-600">Confidentialité</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                <ul class="space-y-2">
+                    <li class="text-gray-600"><i class="fas fa-envelope mr-2"></i> contact@elearning.com</li>
+                    <li class="text-gray-600"><i class="fas fa-phone mr-2"></i> +212 623113083</li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <div class="border-t border-gray-200 mt-8 pt-8 text-center text-gray-600">
+            <p>© {{ date('Y') }} Elearning. Tous droits réservés.</p>
+        </div>
+    </div>
+</footer>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
