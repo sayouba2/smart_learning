@@ -16,10 +16,20 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
+        return view('teacher.profile.edit', [
             'user' => $request->user(),
         ]);
     }
+
+    /**
+ * Display the specified user's profile.
+ */
+public function show($id): View
+{
+    $user = \App\Models\User::findOrFail($id);
+
+    return view('teacher.profile.show', compact('user'));
+}
 
     /**
      * Update the user's profile information.
@@ -34,7 +44,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('teacher.profile.edit')->with('status', 'profile-updated');
     }
 
     /**

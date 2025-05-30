@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Student;
+namespace App\Http\Controllers\Teacher;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
@@ -8,8 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 class ProfileController extends Controller
 {
     /**
@@ -17,7 +17,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('student.profile.edit', [
+        return view('profile.edit', [
             'user' => $request->user(),
         ]);
     }
@@ -32,7 +32,7 @@ class ProfileController extends Controller
             $user->created_at = now(); // Fallback
         }
 
-        return view('student.profile.show', compact('user'));
+        return view('teacher.profile.show', compact('user'));
     }
 
     /**
@@ -48,8 +48,8 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('student.profile.show', ['user' => $request->user()->id])
-                ->with('status', 'profile-updated');
+        return Redirect::route('teacher.profile.show', ['user' => $request->user()->id])
+                  ->with('status', 'profile-updated');
 
     }
 

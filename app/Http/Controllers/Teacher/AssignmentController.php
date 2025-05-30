@@ -19,7 +19,7 @@ class AssignmentController extends Controller
 
     public function create()
     {
-        $courses = Course::where('user_id', Auth::id())->get();
+        $courses = Course::where('teacher_id', Auth::id())->get();
         return view('teacher.assignments.create', compact('courses'));
     }
 

@@ -50,7 +50,7 @@
                 <span>Catégories</span>
             </a>
             
-            <a href="{{ route('admin.enrollments.index') }}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+            <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
                 <i class="fas fa-user-graduate mr-3"></i>
                 <span>Inscriptions</span>
             </a>
@@ -209,7 +209,7 @@
                     <!-- Graphique Inscriptions -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <h3 class="text-lg font-semibold mb-4">Inscriptions par mois</h3>
-                        <canvas id="enrollmentsChart" height="250"></canvas>
+                        <canvas id="enrollmentsChart" height="250" ></canvas>
                     </div>
 
                     <!-- Graphique Revenus -->
@@ -314,12 +314,12 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-lg font-semibold mb-4">Actions rapides</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <a href="{{ route('admin.students.create') }}" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        <a href="{{ route('admin.users.create') }}" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                             <i class="fas fa-user-plus text-blue-500 text-2xl mb-2"></i>
                             <span class="text-sm font-medium text-blue-700">Ajouter Étudiant</span>
                         </a>
                         
-                        <a href="{{ route('admin.teachers.create') }}" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                        <a href="{{ route('admin.users.create') }}" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
                             <i class="fas fa-chalkboard-teacher text-green-500 text-2xl mb-2"></i>
                             <span class="text-sm font-medium text-green-700">Ajouter Enseignant</span>
                         </a>
@@ -342,107 +342,119 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('vendor/chart.js/Chart.bundle.min.js') }}"></script>
+<script src="{{asset('vendor/chart.js/Chart.bundle.min.js')}}"></script>
 <script>
-    // Configuration globale des graphiques
-    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
-    Chart.defaults.color = '#6B7280';
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configuration globale des graphiques
+        Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+        Chart.defaults.color = '#6B7280';
 
-    // Graphique des inscriptions
-    const enrollmentsCtx = document.getElementById('enrollmentsChart').getContext('2d');
-    new Chart(enrollmentsCtx, {
-        type: 'line',
-        data: {
-            labels: @json($enrollmentsChartLabels),
-            datasets: [{
-                label: 'Inscriptions',
-                data: @json($enrollmentsChartData),
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderColor: 'rgba(59, 130, 246, 1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
+        // Vérification des données
+        console.log('Enrollments Data:', @json($enrollmentsChartData));
+        console.log('Enrollments Labels:', @json($enrollmentsChartLabels));
+
+        // Graphique des inscriptions
+        const enrollmentsCtx = document.getElementById('enrollmentsChart');
+        if (enrollmentsCtx) {
+            new Chart(enrollmentsCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($enrollmentsChartLabels),
+                    datasets: [{
+                        label: 'Inscriptions',
+                        data: @json($enrollmentsChartData),
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
+            });
         }
-    });
 
-    // Graphique des revenus
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
-        type: 'bar',
-        data: {
-            labels: @json($revenueChartLabels ),
-            datasets: [{
-                label: 'Revenus (€)',
-                data: @json($revenueChartData ),
-                backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                borderColor: 'rgba(16, 185, 129, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-
-    // Graphique des cours par catégorie
-    const coursesCtx = document.getElementById('coursesChart').getContext('2d');
-    new Chart(coursesCtx, {
-        type: 'doughnut',
-        data: {
-            labels: @json($coursesChartLabels ),
-            datasets: [{
-                data: @json($coursesChartData ),
-                backgroundColor: [
-                    'rgba(59, 130, 246, 0.8)',
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                    'rgba(139, 92, 246, 0.8)',
-                    'rgba(236, 72, 153, 0.8)'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
+        // Graphique des revenus
+        const revenueCtx = document.getElementById('revenueChart');
+        if (revenueCtx) {
+            new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($revenueChartLabels),
+                    datasets: [{
+                        label: 'Revenus (€)',
+                        data: @json($revenueChartData),
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            }
+            });
+        }
+
+        // Graphique des cours par catégorie
+        const coursesCtx = document.getElementById('coursesChart');
+        if (coursesCtx) {
+            new Chart(coursesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: @json($coursesChartLabels),
+                    datasets: [{
+                        data: @json($coursesChartData),
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
         }
     });
 </script>

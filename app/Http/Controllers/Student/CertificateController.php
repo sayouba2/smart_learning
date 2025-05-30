@@ -9,6 +9,18 @@ use PDF;
 
 class CertificateController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+
+        // Récupère tous les cours complétés par l'étudiant
+        $completedCourses = $user->completedCourses()->get();
+
+        return view('student.certificate.index', [
+            'courses' => $completedCourses
+        ]);
+    }
+
     public function generate(Course $course)
     {
         $user = Auth::user();

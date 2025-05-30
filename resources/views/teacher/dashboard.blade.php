@@ -42,7 +42,7 @@
                     <a href="{{ route('teacher.assignments.index') }}" class="nav-link">
                         <i class="fas fa-tasks"></i>
                         <span>Devoirs</span>
-                        <span class="nav-badge pending">{{ $stats['pending_assignments'] ?? 0 }}</span>
+                        <span class="nav-badge pending">{{ $pending_assignments ?? 0 }}</span>
                     </a>
                 </li>
                 <li class="nav-item">

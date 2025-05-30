@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Student;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
@@ -17,7 +17,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('student.profile.edit', [
+        return view('profile.edit', [
             'user' => $request->user(),
         ]);
     }
@@ -34,7 +34,6 @@ class ProfileController extends Controller
 
         return view('student.profile.show', compact('user'));
     }
-
     /**
      * Update the user's profile information.
      */
@@ -48,8 +47,8 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('student.profile.show', ['user' => $request->user()->id])
-                ->with('status', 'profile-updated');
+        return Redirect::route('admin.profile.show', ['user' => $request->user()->id])
+               ->with('status', 'profile-updated');
 
     }
 

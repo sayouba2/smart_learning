@@ -9,6 +9,11 @@ class Assignment extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+    'due_date' => 'datetime',
+];
+
+
     protected $fillable = [
         'title',
         'description',

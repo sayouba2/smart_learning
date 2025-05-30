@@ -48,7 +48,7 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                            <a href="{{ route('admin.profile.show', ['user' => auth()->id()]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
                                 <i class="fas fa-user-cog mr-2"></i>Profil
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
@@ -86,7 +86,7 @@
                 
                 @auth
                 <div class="pt-2 border-t">
-                    <a href="{{ route('profile.edit') }}" class="block py-2 text-gray-700 hover:text-indigo-600">
+                    <a href="{{ route('admin.profile.show', ['user' => auth()->id()]) }}" class="block py-2 text-gray-700 hover:text-indigo-600">
                         <i class="fas fa-user-cog mr-2"></i>Profil
                     </a>
                     <form method="POST" action="{{ route('logout') }}">

@@ -18,66 +18,58 @@ class DashboardController extends Controller
         $totalUsers = \App\Models\User::count();
         $totalCourses = Course::count();
 
-        // Graphique des inscriptions mensuelles (12 derniers mois)
+        // Génération des 12 derniers mois
+        $months = collect();
+        for ($i = 11; $i >= 0; $i--) {
+            $months->push(now()->subMonths($i)->startOfMonth());
+        }
+
+        // Graphique des inscriptions mensuelles
         $enrollments = Enrollment::select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month_year'),
                 DB::raw('COUNT(*) as count')
             )
-            ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get();
+            ->where('created_at', '>=', $months->first())
+            ->groupBy('month_year')
+            ->orderBy('month_year')
+            ->pluck('count', 'month_year');
 
-        $months = collect(range(0, 11))->map(function ($i) {
-            return now()->subMonths(11 - $i)->format('M');
+        $enrollmentsChartLabels = $months->map(fn ($date) => $date->format('M Y'));
+        $enrollmentsChartData = $months->map(function ($date) use ($enrollments) {
+            $key = $date->format('Y-m');
+            return $enrollments[$key] ?? 0;
         });
 
-        $enrollmentsChartLabels = $months->toArray();
-        $enrollmentsChartData = $months->map(function ($label, $i) use ($enrollments) {
-            $targetMonth = now()->subMonths(11 - $i);
-            $match = $enrollments->first(function ($e) use ($targetMonth) {
-                return $e->month == $targetMonth->month && $e->year == $targetMonth->year;
-            });
-            return $match ? $match->count : 0;
-        });
-
-        // Graphique des revenus par mois (12 derniers mois)
+        // Graphique des revenus par mois
         $payments = Payment::select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month_year'),
                 DB::raw('SUM(amount) as total')
             )
-            ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get();
+            ->where('created_at', '>=', $months->first())
+            ->groupBy('month_year')
+            ->orderBy('month_year')
+            ->pluck('total', 'month_year');
 
-        $revenueChartLabels = $months->toArray();
-        $revenueChartData = $months->map(function ($label, $i) use ($payments) {
-            $targetMonth = now()->subMonths(11 - $i);
-            $match = $payments->first(function ($p) use ($targetMonth) {
-                return $p->month == $targetMonth->month && $p->year == $targetMonth->year;
-            });
-            return $match ? round($match->total, 2) : 0;
+        $revenueChartLabels = $enrollmentsChartLabels;
+        $revenueChartData = $months->map(function ($date) use ($payments) {
+            $key = $date->format('Y-m');
+            return $payments[$key] ?? 0;
         });
 
         // Graphique des cours par catégorie
-        $categories = Category::withCount('courses')->get();
+        $categories = Category::withCount('courses')->having('courses_count', '>', 0)->get();
         $coursesChartLabels = $categories->pluck('name');
         $coursesChartData = $categories->pluck('courses_count');
 
-        return view('admin.dashboard', compact(
-            'totalUsers',
-            'totalCourses',
-            'enrollmentsChartLabels',
-            'enrollmentsChartData',
-            'revenueChartLabels',
-            'revenueChartData',
-            'coursesChartLabels',
-            'coursesChartData'
-        ));
+        return view('admin.dashboard', [
+            'totalUsers' => $totalUsers,
+            'totalCourses' => $totalCourses,
+            'enrollmentsChartLabels' => $enrollmentsChartLabels,
+            'enrollmentsChartData' => $enrollmentsChartData,
+            'revenueChartLabels' => $revenueChartLabels,
+            'revenueChartData' => $revenueChartData,
+            'coursesChartLabels' => $coursesChartLabels,
+            'coursesChartData' => $coursesChartData,
+        ]);
     }
 }

@@ -43,8 +43,35 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
 
-use App\Http\Controllers\Teacher\LessonController;
+
+// ADMIN
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('profile/{user}', [AdminProfileController::class, 'show'])->name('profile.show');
+   // Route::get('profile/{user}/edit', [AdminProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/{user}', [AdminProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile/{user}', [AdminProfileController::class, 'destroy'])->name('profile.destroy'); // <-- ajout ici
+});
+
+// TEACHER
+Route::prefix('teacher')->name('teacher.')->middleware(['auth', 'role:teacher'])->group(function () {
+    Route::get('profile/{user}', [TeacherProfileController::class, 'show'])->name('profile.show');
+    //Route::get('profile/edit', [TeacherProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/{user}', [TeacherProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile/{user}', [TeacherProfileController::class, 'destroy'])->name('profile.destroy'); // <-- ajout ici
+});
+
+// STUDENT
+Route::prefix('student')->name('student.')->middleware(['auth', 'role:student'])->group(function () {
+    Route::get('profile/{user}', [StudentProfileController::class, 'show'])->name('profile.show');
+   // Route::get('profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/{user}', [StudentProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile/{user}', [StudentProfileController::class, 'destroy'])->name('profile.destroy'); // <-- ajout ici
+});
+
+
 // Page d'accueil publique
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -62,6 +89,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/{id}', [ProfileController::class, 'show'])->middleware('auth')->name('profile.show');
+
 });
 
 
@@ -232,7 +261,7 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->name('admin.')->group(
 Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
 
     // Tableau de bord des cours
-    Route::resource('courses', CourseController::class);
+    Route::resource('courses', TeacherCourseController::class);
 
     Route::resource('announcements', AnnouncementController::class);
     // Gestion des étudiants
@@ -245,6 +274,7 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     // Quiz
     Route::resource('quizzes', TeacherQuizController::class);
 
+    
     // Route personnalisée pour afficher les discussions sans réponse
     Route::get('discussions/unanswered', [DiscussionController::class, 'unanswered'])->name('discussions.unanswered');
     // Discussions
@@ -273,6 +303,7 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
 
 Route::prefix('student')->name('student.')->middleware(['auth', 'student'])->group(function () {
 
+    
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/courses', [StudentCourseController::class, 'index'])->name('courses');
     Route::get('/certificates', [StudentCertificateController::class, 'index'])->name('certificates');
@@ -282,6 +313,8 @@ Route::prefix('student')->name('student.')->middleware(['auth', 'student'])->gro
     Route::get('/progress', [StudentProgressController::class, 'index'])->name('progress');
     Route::get('/forum', [StudentForumController::class, 'index'])->name('forum');
     Route::get('/profile', [StudentProfileController::class, 'index'])->name('profile');
+    Route::get('/assignments/{id}', [StudentAssignmentController::class, 'show'])->name('assignments.show');
+
 });
 
 require __DIR__.'/auth.php';

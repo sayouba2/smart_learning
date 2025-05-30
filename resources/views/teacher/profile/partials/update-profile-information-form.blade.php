@@ -13,9 +13,9 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('student.profile.update', ['user' => $user->id]) }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('teacher.profile.update', ['user' => $user->id]) }}" class="mt-6 space-y-6">
         @csrf
-        @method('patch')
+        @method('PUT')
 
         <div>
             <x-input-label for="name" :value="__('Name')" />

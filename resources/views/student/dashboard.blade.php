@@ -23,12 +23,12 @@
                 <i class="fas fa-home"></i>
                 <span>Tableau de bord</span>
             </a>
-            <a href="{{ route('student.courses') }}" class="nav-item">
+            <a href="#cours" class="nav-item">
                 <i class="fas fa-book-open"></i>
                 <span>Mes Cours</span>
                 <span class="nav-badge">{{ count($inProgressCourses) + count($completedCourses) }}</span>
             </a>
-            <a href="{{ route('student.certificates') }}" class="nav-item">
+            <a href="#certificate" class="nav-item">
                 <i class="fas fa-medal"></i>
                 <span>Certificats</span>
                 <span class="nav-badge">{{ count($certificates) }}</span>
@@ -59,7 +59,7 @@
                 <span class="nav-badge">{{ $unreadMessages }}</span>
                 @endif
             </a>
-            <a href="{{ route('student.profile') }}" class="nav-item">
+            <a href="{{ route('student.profile.show', ['user' => auth()->id()]) }}" class="nav-item">
                 <i class="fas fa-user-cog"></i>
                 <span>Profil</span>
             </a>
@@ -259,7 +259,7 @@
             </div>
 
             <!-- Courses Progress -->
-            <div class="courses-progress">
+            <div id= 'cours' class="courses-progress">
                 <div class="section-header">
                     <h2><i class="fas fa-book-open"></i> Mes Cours en Progression</h2>
                     <a href="{{ route('student.courses') }}" class="view-all">Voir tout</a>
@@ -361,7 +361,7 @@
 
                 <div class="recent-certificates">
                     <div class="section-header">
-                        <h2><i class="fas fa-medal"></i> Certificats Récents</h2>
+                        <h2><i id= 'certificate' class="fas fa-medal"></i> Certificats Récents</h2>
                         <a href="{{ route('student.certificates') }}" class="view-all">Voir tout</a>
                     </div>
                     @if(count($certificates) > 0)

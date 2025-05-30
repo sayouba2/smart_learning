@@ -1,365 +1,588 @@
 @extends('layouts.teacher')
 
-@section('content')
-<div class="course-creation-container">
-    <div class="creation-header">
-        <h2 class="creation-title">Créer un nouveau cours</h2>
-        <p class="creation-subtitle">Remplissez les détails de votre nouveau cours</p>
-    </div>
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    <form action="{{ route('teacher.courses.store') }}" method="POST" class="creation-form" id="courseForm">
-        @csrf
-        
-        <div class="form-floating mb-4">
-            <input type="text" class="form-control" name="title" id="title" placeholder=" " required maxlength="255">
-            <label for="title">Titre du cours</label>
-            <div class="invalid-feedback">Veuillez saisir un titre pour le cours</div>
-            <div class="form-text">Maximum 255 caractères</div>
-        </div>
-
-        <div class="form-floating mb-4">
-            <textarea class="form-control" name="description" id="description" placeholder=" " style="height: 150px" required></textarea>
-            <label for="description">Description du cours</label>
-            <div class="invalid-feedback">Veuillez saisir une description</div>
-        </div>
-
-        <div class="row g-3 mb-4">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="number" class="form-control" name="price" id="price" placeholder=" " required min="0" step="0.01">
-                    <label for="price">Prix (€)</label>
-                    <div class="invalid-feedback">Veuillez saisir un prix valide</div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="number" class="form-control" name="duration" id="duration" placeholder=" " required min="1">
-                    <label for="duration">Durée (heures)</label>
-                    <div class="invalid-feedback">Veuillez saisir une durée valide</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-3 mb-4">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <select class="form-select" name="level" id="level" required>
-                        <option value="" selected disabled>Sélectionnez...</option>
-                        <option value="débutant">Débutant</option>
-                        <option value="intermédiaire">Intermédiaire</option>
-                        <option value="avancé">Avancé</option>
-                    </select>
-                    <label for="level">Niveau</label>
-                    <div class="invalid-feedback">Veuillez sélectionner un niveau</div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <select class="form-select" name="category_id" id="category_id" required>
-                        <option value="" selected disabled>Sélectionnez...</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    <label for="category_id">Catégorie</label>
-                    <div class="invalid-feedback">Veuillez sélectionner une catégorie</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-submit">
-                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                Créer le cours
-            </button>
-            <a href="{{ route('teacher.courses.index') }}" class="btn btn-outline-secondary">Annuler</a>
-        </div>
-    </form>
-</div>
-
 @push('styles')
 <style>
-    :root {
-        --primary-blue: #1a73e8;
-        --primary-blue-hover: #1765cc;
-        --light-blue: #e8f0fe;
-        --blue-accent: #4285f4;
-        --blue-shadow: rgba(26, 115, 232, 0.2);
-        --dark-blue: #0d47a1;
-        --text-primary: #202124;
-        --text-secondary: #5f6368;
-        --border-color: #dadce0;
-        --error-color: #d93025;
-        --success-color: #0f9d58;
+    .gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
-    .course-creation-container {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 35px;
+    .gradient-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .floating-label {
+        position: absolute;
+        left: 1rem;
+        top: 0.75rem;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        color: #6b7280;
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(210, 227, 252, 0.5);
+        padding: 0 0.25rem;
+        font-weight: 500;
     }
     
-    .creation-header {
-        margin-bottom: 35px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid var(--light-blue);
+    .input-focused .floating-label,
+    .input-filled .floating-label {
+        top: -0.5rem;
+        left: 0.75rem;
+        font-size: 0.75rem;
+        color: #6366f1;
+        font-weight: 600;
+    }
+    
+    .animate-slide-up {
+        animation: slideUp 0.8s ease-out;
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    .animate-scale-in {
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .step-indicator {
         position: relative;
     }
     
-    .creation-header::after {
+    .step-indicator::after {
         content: '';
         position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 80px;
+        top: 50%;
+        left: 100%;
+        width: 100%;
         height: 2px;
-        background-color: var(--primary-blue);
+        background: #e5e7eb;
+        z-index: 1;
     }
     
-    .creation-title {
-        font-weight: 700;
-        color: var(--primary-blue);
-        margin-bottom: 10px;
-        letter-spacing: -0.5px;
+    .step-indicator.completed::after {
+        background: #10b981;
     }
     
-    .creation-subtitle {
-        color: var(--text-secondary);
-        margin-bottom: 0;
-        font-size: 1.05rem;
+    .floating-action {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 50;
     }
     
-    .creation-form {
-        padding: 15px 0;
-    }
-    
-    .form-floating {
-        position: relative;
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-floating label {
-        color: var(--text-secondary);
-        transition: all 0.25s ease;
-        font-weight: 500;
-    }
-    
-    .form-floating .form-control:focus ~ label,
-    .form-floating .form-control:not(:placeholder-shown) ~ label,
-    .form-floating .form-select:focus ~ label,
-    .form-floating .form-select:not(:placeholder-shown) ~ label {
-        color: var(--primary-blue);
-        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-    }
-    
-    .form-control, .form-select {
-        border-radius: 8px;
-        padding: 16px;
-        border: 2px solid var(--border-color);
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        color: var(--text-primary);
-        height: calc(3.5rem + 2px);
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: var(--primary-blue);
-        box-shadow: 0 0 0 4px var(--blue-shadow);
-        outline: none;
-    }
-    
-    .form-select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%235f6368' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        background-size: 16px 12px;
-    }
-    
-    .form-text {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin-top: 6px;
-        transition: color 0.2s;
-    }
-    
-    .form-actions {
-        display: flex;
-        gap: 15px;
-        margin-top: 40px;
-        padding-top: 25px;
-        border-top: 2px solid var(--light-blue);
-    }
-    
-    .btn-submit {
-        padding: 12px 30px;
-        font-weight: 600;
-        background-color: var(--primary-blue);
-        border: none;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 4px 6px var(--blue-shadow);
-    }
-    
-    .btn-submit:hover {
-        background-color: var(--primary-blue-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px var(--blue-shadow);
-    }
-    
-    .btn-submit:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 3px var(--blue-shadow);
-    }
-    
-    .btn-outline-secondary {
-        padding: 12px 25px;
-        font-weight: 500;
-        border: 2px solid var(--border-color);
-        background: transparent;
-        color: var(--text-secondary);
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-outline-secondary:hover {
-        background-color: #f5f5f5;
-        color: var(--text-primary);
-        border-color: #c0c0c0;
-    }
-
-    .was-validated .form-control:invalid,
-    .was-validated .form-select:invalid {
-        border-color: var(--error-color);
-        box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.15);
-    }
-    
-    .was-validated .form-control:valid,
-    .was-validated .form-select:valid {
-        border-color: var(--success-color);
-        box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.15);
-    }
-    
-    .was-validated .form-control:invalid ~ .invalid-feedback,
-    .was-validated .form-select:invalid ~ .invalid-feedback {
-        display: block;
-    }
-    
-    .invalid-feedback {
-        display: none;
-        color: var(--error-color);
-        font-size: 0.85rem;
-        margin-top: 6px;
-        font-weight: 500;
-    }
-    
-    .alert-success {
-        background-color: rgba(15, 157, 88, 0.1);
-        border-left: 4px solid var(--success-color);
-        color: #0a693a;
-        padding: 16px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        position: relative;
-    }
-    
-    .alert-success .btn-close {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        opacity: 0.7;
-        transition: opacity 0.2s;
-    }
-    
-    .alert-success .btn-close:hover {
-        opacity: 1;
+    .progress-ring {
+        transition: stroke-dashoffset 0.35s;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
     }
 </style>
 @endpush
 
+@section('content')
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8">
+    <!-- Background decorative elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <div class="container mx-auto px-4 relative z-10">
+        <!-- Header Section -->
+        <div class="text-center mb-12 animate-slide-up">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl mb-6 shadow-lg">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Créer un <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">nouveau cours</span>
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Partagez vos connaissances avec le monde entier. Créez un cours engageant et inspirant pour vos étudiants.
+            </p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="max-w-4xl mx-auto mb-12 animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="flex items-center justify-between relative">
+                <div class="flex items-center step-indicator completed">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <span class="ml-3 font-semibold text-green-600">Informations de base</span>
+                </div>
+                <div class="flex items-center step-indicator">
+                    <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">2</div>
+                    <span class="ml-3 font-semibold text-gray-700">Configuration</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">3</div>
+                    <span class="ml-3 font-semibold text-gray-400">Publication</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Alert -->
+        @if(session('success'))
+        <div class="max-w-4xl mx-auto mb-8 animate-scale-in">
+            <div class="bg-green-50 border-l-4 border-green-400 p-6 rounded-lg shadow-sm">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-green-700 font-medium">{{ session('success') }}</p>
+                    </div>
+                    <button type="button" class="text-green-400 hover:text-green-600 ml-4" onclick="this.parentElement.parentElement.parentElement.remove()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Main Form -->
+        <div class="max-w-4xl mx-auto animate-slide-up" style="animation-delay: 0.4s;">
+            <div class="glass-effect rounded-3xl shadow-2xl p-8 md:p-12">
+                <form action="{{ route('teacher.courses.store') }}" method="POST" id="courseForm" class="space-y-8">
+                    @csrf
+                    
+                    <!-- Form Progress -->
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm text-gray-500 mb-2">
+                            <span>Progression du formulaire</span>
+                            <span id="formProgress">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="progressBar" class="h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Course Title -->
+                    <div class="space-y-2">
+                        <div class="relative input-group">
+                            <input 
+                                type="text" 
+                                name="title" 
+                                id="title" 
+                                placeholder=" "
+                                maxlength="255"
+                                class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-all duration-300 peer bg-white"
+                                required
+                            >
+                            <label class="floating-label text-lg">Titre du cours</label>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-red-500 hidden error-message">Ce champ est obligatoire</span>
+                            <span id="titleCounter" class="text-gray-500">0/255 caractères</span>
+                        </div>
+                    </div>
+
+                    <!-- Course Description -->
+                    <div class="space-y-2">
+                        <div class="relative input-group">
+                            <textarea 
+                                name="description" 
+                                id="description" 
+                                placeholder=" "
+                                rows="5"
+                                class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-all duration-300 peer bg-white resize-none"
+                                required
+                            ></textarea>
+                            <label class="floating-label text-lg">Description du cours</label>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-red-500 hidden error-message">Veuillez saisir une description</span>
+                            <span id="descriptionCounter" class="text-gray-500">0 caractères</span>
+                        </div>
+                    </div>
+
+                    <!-- Price and Duration Row -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Price -->
+                        <div class="space-y-2">
+                            <div class="relative input-group">
+                                <input 
+                                    type="number" 
+                                    name="price" 
+                                    id="price" 
+                                    placeholder=" "
+                                    min="0" 
+                                    step="0.01"
+                                    class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-all duration-300 peer bg-white"
+                                    required
+                                >
+                                <label class="floating-label text-lg">Prix (€)</label>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="text-red-500 hidden error-message">Veuillez saisir un prix valide</span>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="space-y-2">
+                            <div class="relative input-group">
+                                <input 
+                                    type="number" 
+                                    name="duration" 
+                                    id="duration" 
+                                    placeholder=" "
+                                    min="1"
+                                    class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-all duration-300 peer bg-white"
+                                    required
+                                >
+                                <label class="floating-label text-lg">Durée (heures)</label>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="text-red-500 hidden error-message">Veuillez saisir une durée valide</span>
+                        </div>
+                    </div>
+
+                    <!-- Level and Category Row -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Level -->
+                        <div class="space-y-2">
+                            <div class="relative input-group">
+                                <select 
+                                    name="level" 
+                                    id="level" 
+                                    class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-all duration-300 peer bg-white appearance-none"
+                                    required
+                                >
+                                    <option value="" disabled selected></option>
+                                    <option value="débutant">🌱 Débutant</option>
+                                    <option value="intermédiaire">📈 Intermédiaire</option>
+                                    <option value="avancé">🚀 Avancé</option>
+                                </select>
+                                <label class="floating-label text-lg">Niveau du cours</label>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="text-red-500 hidden error-message">Veuillez sélectionner un niveau</span>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="space-y-2">
+                            <div class="relative input-group">
+                                <select 
+                                    name="category_id" 
+                                    id="category_id" 
+                                    class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-all duration-300 peer bg-white appearance-none"
+                                    required
+                                >
+                                    <option value="" disabled selected></option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                <label class="floating-label text-lg">Catégorie</label>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="text-red-500 hidden error-message">Veuillez sélectionner une catégorie</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200">
+                        <button 
+                            type="button"
+                            onclick="window.location.href='{{ route('teacher.courses.index') }}'"
+                            class="flex-1 sm:flex-none px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-300 font-semibold text-lg"
+                        >
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Annuler
+                        </button>
+                        
+                        <button 
+                            type="submit" 
+                            id="submitBtn"
+                            class="flex-1 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                            <svg id="submitIcon" class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <svg id="loadingIcon" class="hidden w-6 h-6 inline mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span id="submitText">Créer le cours</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button (Save Draft) -->
+    <div class="floating-action">
+        <button 
+            type="button" 
+            id="saveDraftBtn"
+            class="bg-white text-gray-700 rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:bg-gray-50"
+            title="Sauvegarder en brouillon"
+        >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+@endsection
+
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Validation en temps réel
-        const form = document.getElementById('courseForm');
-        const submitBtn = form.querySelector('.btn-submit');
-        const spinner = submitBtn.querySelector('.spinner-border');
-        
-        // Validation des champs
-        const validateField = (field) => {
-            if (field.checkValidity()) {
-                field.classList.remove('is-invalid');
-                if (field.value) {
-                    field.classList.add('is-valid');
-                } else {
-                    field.classList.remove('is-valid');
-                }
-            } else {
-                field.classList.add('is-invalid');
-                field.classList.remove('is-valid');
-            }
-        };
-        
-        // Écouteurs d'événements pour tous les champs
-        document.querySelectorAll('.form-control, .form-select').forEach(field => {
-            field.addEventListener('input', () => validateField(field));
-            field.addEventListener('change', () => validateField(field));
-            field.addEventListener('blur', () => validateField(field));
-        });
-        
-        // Soumission du formulaire
-        form.addEventListener('submit', function(e) {
-            if (!form.checkValidity()) {
-                e.preventDefault();
-                e.stopPropagation();
-                form.classList.add('was-validated');
-                
-                // Focus sur le premier champ invalide
-                const invalidField = form.querySelector('.is-invalid');
-                if (invalidField) {
-                    invalidField.focus();
-                }
-            } else {
-                submitBtn.disabled = true;
-                spinner.classList.remove('d-none');
-            }
-        });
-        
-        // Compteur de caractères pour le titre
-        const titleInput = document.getElementById('title');
-        const titleCounter = document.createElement('div');
-        titleCounter.className = 'text-end form-text';
-        titleInput.parentNode.appendChild(titleCounter);
-        
-        titleInput.addEventListener('input', function() {
-            const remaining = 255 - this.value.length;
-            titleCounter.textContent = `${this.value.length}/255 caractères`;
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('courseForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitIcon = document.getElementById('submitIcon');
+    const loadingIcon = document.getElementById('loadingIcon');
+    const submitText = document.getElementById('submitText');
+    const progressBar = document.getElementById('progressBar');
+    const formProgress = document.getElementById('formProgress');
+    const titleCounter = document.getElementById('titleCounter');
+    const descriptionCounter = document.getElementById('descriptionCounter');
+    
+    // Form fields
+    const fields = ['title', 'description', 'price', 'duration', 'level', 'category_id'];
+    const inputs = fields.map(field => document.getElementById(field));
+
+    // Floating labels logic
+    function handleFloatingLabel(input) {
+        const group = input.closest('.input-group');
+        if (input.value.trim() !== '' || document.activeElement === input) {
+            group.classList.add('input-focused', 'input-filled');
+        } else {
+            group.classList.remove('input-focused', 'input-filled');
+        }
+    }
+
+    // Initialize floating labels
+    inputs.forEach(input => {
+        if (input) {
+            handleFloatingLabel(input);
             
-            if (remaining < 20) {
-                titleCounter.style.color = '#d93025';
-            } else {
-                titleCounter.style.color = '#5f6368';
+            input.addEventListener('focus', () => {
+                input.closest('.input-group').classList.add('input-focused');
+            });
+            
+            input.addEventListener('blur', () => {
+                input.closest('.input-group').classList.remove('input-focused');
+                handleFloatingLabel(input);
+                validateField(input);
+            });
+            
+            input.addEventListener('input', () => {
+                handleFloatingLabel(input);
+                updateProgress();
+                clearFieldError(input);
+            });
+        }
+    });
+
+    // Character counters
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+
+    titleInput.addEventListener('input', function() {
+        const count = this.value.length;
+        titleCounter.textContent = `${count}/255 caractères`;
+        
+        if (count > 230) {
+            titleCounter.classList.add('text-red-500');
+            titleCounter.classList.remove('text-gray-500');
+        } else {
+            titleCounter.classList.remove('text-red-500');
+            titleCounter.classList.add('text-gray-500');
+        }
+    });
+
+    descriptionInput.addEventListener('input', function() {
+        const count = this.value.length;
+        descriptionCounter.textContent = `${count} caractères`;
+    });
+
+    // Progress calculation
+    function updateProgress() {
+        let filledFields = 0;
+        const totalFields = fields.length;
+
+        inputs.forEach(input => {
+            if (input && input.value.trim() !== '') {
+                filledFields++;
             }
         });
+
+        const progress = (filledFields / totalFields) * 100;
+        progressBar.style.width = progress + '%';
+        formProgress.textContent = Math.round(progress) + '%';
+    }
+
+    // Field validation
+    function validateField(field) {
+        const errorMsg = field.parentElement.parentElement.querySelector('.error-message');
         
-        // Déclencher l'événement initial
-        titleInput.dispatchEvent(new Event('input'));
+        if (!field.checkValidity() || field.value.trim() === '') {
+            field.classList.add('border-red-500');
+            field.classList.remove('border-gray-200', 'border-green-500');
+            if (errorMsg) {
+                errorMsg.classList.remove('hidden');
+            }
+            return false;
+        } else {
+            field.classList.remove('border-red-500');
+            field.classList.add('border-green-500');
+            if (errorMsg) {
+                errorMsg.classList.add('hidden');
+            }
+            return true;
+        }
+    }
+
+    function clearFieldError(field) {
+        if (field.value.trim() !== '') {
+            field.classList.remove('border-red-500');
+            field.classList.add('border-gray-200');
+            const errorMsg = field.parentElement.parentElement.querySelector('.error-message');
+            if (errorMsg) {
+                errorMsg.classList.add('hidden');
+            }
+        }
+    }
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let isValid = true;
+        
+        // Validate all fields
+        inputs.forEach(input => {
+            if (input && !validateField(input)) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            // Scroll to first error
+            const firstError = form.querySelector('.border-red-500');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstError.focus();
+            }
+            return;
+        }
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitIcon.classList.add('hidden');
+        loadingIcon.classList.remove('hidden');
+        submitText.textContent = 'Création en cours...';
+
+        // Submit form after delay (for demo purposes)
+        setTimeout(() => {
+            form.submit();
+        }, 1500);
     });
+
+    // Save draft functionality
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    saveDraftBtn.addEventListener('click', function() {
+        // Here you would implement the save draft functionality
+        alert('Fonctionnalité de sauvegarde en brouillon à implémenter');
+    });
+
+    // Initialize progress
+    updateProgress();
+
+    // Animate elements on load
+    setTimeout(() => {
+        document.querySelectorAll('.animate-slide-up, .animate-fade-in, .animate-scale-in').forEach(el => {
+            el.style.opacity = '1';
+        });
+    }, 100);
+});
+
+// CSS animations for blobs
+const style = document.createElement('style');
+style.textContent = `
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+`;
+document.head.appendChild(style);
 </script>
 @endpush
-@endsection
