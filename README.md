@@ -1,249 +1,208 @@
-Here’s a comprehensive `README.md` for your Laravel elearning project. This file will help users and developers understand the project, set it up, and contribute to it.
+# Laravel Elearning Platform
+
+Une plateforme d’e-learning intelligente construite avec Laravel 11. Elle permet aux étudiants d’apprendre à leur rythme, aux enseignants de gérer leurs cours, et aux administrateurs de superviser l’ensemble. Le système inclut un tableau de bord personnalisé selon le rôle et des fonctionnalités interactives comme les quiz, devoirs et certificats.
 
 ---
 
-# Laravel Chatbot with Deepseek API
+## 🚀 Fonctionnalités principales
 
-A Laravel-based chatbot that answers questions related to PHP and Laravel using the Deepseek API. The chatbot filters questions to ensure they are relevant to PHP and Laravel, and it provides a user-friendly interface for interaction.
-
----
-
-## Features
-
-- **PHP/Laravel-Specific Chatbot**: Only answers questions related to PHP and Laravel.
-- **Markdown Support**: Renders bot responses with markdown formatting.
-- **Syntax Highlighting**: Highlights code blocks in bot responses.
-- **Real-Time Interaction**: Smooth, real-time chat interface without page reloads.
-- **Authentication**: User authentication using Laravel Jetstream.
-- **Chat History**: Saves chat history for authenticated users.
-- **Error Handling**: Graceful error handling for API failures and invalid questions.
+* **Rôles multiples** : Étudiants, enseignants, administrateurs avec des dashboards dédiés.
+* **Création et gestion de cours et de leçons** : Par les enseignants.
+* **Inscription et suivi de progression** : Pour les étudiants.
+* **Système de quiz et devoirs** : Évaluation des connaissances.
+* **Certificats** : Génération automatique après réussite.
+* **Tableaux de bord analytiques** : Statistiques par rôle (revenus, inscriptions, performance...).
 
 ---
 
-## Prerequisites
+## 🧰 Prérequis
 
-Before you begin, ensure you have the following installed:
+* PHP >= 8.1
+* Composer
+* Node.js & npm
+* MySQL 5
+* Laravel 11
+* xampp
 
-- PHP 8.0 or higher
-- Composer
-- Node.js and npm
-- MySQL or any other supported database
-- Deepseek API key (or OpenRouter API key if using OpenRouter)
 
 ---
 
-## Installation
+## ⚙️ Installation
 
-1. **Clone the Repository**
+1. **Cloner le dépôt**
+
    ```bash
-   git clone https://github.com/yourusername/laravel-chatbot.git
-   cd laravel-chatbot
+   git clone https://github.com/sayouba2/smart_learning.git
+   cd smart_learning
    ```
 
-2. **Install PHP Dependencies**
+2. **Installer les dépendances PHP**
+
    ```bash
    composer install
    ```
 
-3. **Install JavaScript Dependencies**
+3. **Installer les dépendances JavaScript**
+
    ```bash
    npm install
    ```
 
-4. **Set Up Environment Variables**
-   Copy the `.env.example` file to `.env` and update the following variables:
+4. **Copier le fichier `.env`**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+5. **Configurer l’environnement `.env`**
+
    ```env
-   APP_NAME="Laravel Chatbot"
+   APP_NAME="Smart Learning"
    APP_URL=http://localhost:8000
 
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=laravel_chatbot
+   DB_DATABASE=laravel
    DB_USERNAME=root
    DB_PASSWORD=
 
-   DEEPSEEK_API_KEY=your_deepseek_api_key_here
+   OPENAI_API_KEY=your_api_key
+   PAYPAL_CLIENT_ID=your_paypal_id
    ```
 
-5. **Generate Application Key**
+6. **Générer la clé de l’application**
+
    ```bash
    php artisan key:generate
    ```
 
-6. **Run Migrations**
+7. **Lancer les migrations**
+
    ```bash
-   php artisan migrate
+   php artisan migrate --seed
    ```
 
-7. **Compile Assets**
+8. **Compiler les assets**
+
    ```bash
    npm run dev
    ```
 
-8. **Start the Development Server**
+9. **Démarrer le serveur**
+
    ```bash
    php artisan serve
    ```
 
-9. **Access the Application**
-   Open your browser and navigate to:
-   ```
-   http://localhost:8000
-   ```
+---
+
+## 🔒 Authentification et rôles
+
+Le système utilise Laravel Breeze avec des redirections conditionnelles selon le rôle :
+
+* `admin/dashboard`
+* `teacher/dashboard`
+* `student/dashboard`
+
+Les rôles sont attribués lors de l’inscription.
 
 ---
 
-## Configuration
-
-### **1. Deepseek API**
-- Obtain an API key from [Deepseek](https://deepseek.com) or [OpenRouter](https://openrouter.ai).
-- Add the API key to your `.env` file:
-  ```env
-  DEEPSEEK_API_KEY=your_api_key_here
-  ```
-
-### **2. Markdown and Syntax Highlighting**
-- The chatbot uses `marked.js` for markdown parsing and `highlight.js` for syntax highlighting.
-- Ensure these dependencies are installed:
-  ```bash
-  npm install marked highlight.js
-  ```
-
-### **3. Authentication**
-- The project uses Laravel Jetstream for authentication.
-- To scaffold authentication views, run:
-  ```bash
-  php artisan jetstream:install livewire
-  npm install && npm run dev
-  php artisan migrate
-  ```
-
----
-
-## Usage
-
-1. **Register or Log In**
-   - Create an account or log in to access the chatbot.
-
-2. **Ask Questions**
-   - Type your PHP or Laravel-related questions in the chat input.
-   - The chatbot will respond with relevant answers.
-
-3. **View Chat History**
-   - Authenticated users can view their chat history.
-
----
-
-## Project Structure
+## 📁 Structure du projet
 
 ```
-laravel-chatbot/
+smart-learning/
 ├── app/
 │   ├── Http/Controllers/
-│   │   └── ChatController.php
+│   │   ├── Auth/
+│   │   ├── Admin/
+│   │   ├── Teacher/
+│   │   ├── Student/
+│   │   └── ContactController.php, AboutController, StudentController ...
 │   ├── Models/
-│   │   └── Chat.php
-│   └── Providers/
-├── config/
+│   │   ├── User.php
+│   │   ├── Course.php
+│   │   ├── Enrollment.php
+│   │   ├── Quiz.php
+│   │   └── Certificate.php
 ├── database/
 │   ├── migrations/
 │   └── seeders/
-├── public/
 ├── resources/
-│   ├── js/
-│   │   └── app.js
 │   ├── views/
-│   │   └── chat.blade.php
-│   └── lang/
+│   └── js/
 ├── routes/
-│   └── web.php
-├── tests/
-├── .env.example
-├── .gitignore
+│   ├── web.php
+│   └── admin.php, teacher.php, student.php
+├── public/
+├── .env
 ├── composer.json
 ├── package.json
-├── README.md
 └── vite.config.js
+
+---
+
+## 📊 Graphiques dynamiques
+
+Utilisation de `Chart.js`  pour afficher :
+
+* Cours les plus populaires
+* Inscriptions par mois
+* Revenus par catégorie
+* Progression des étudiants
+
+---
+
+## ✅ Tests
+
+Les tests peuvent être lancés via :
+
+```bash
+php artisan test
 ```
 
 ---
 
-## API Integration
+## 🤝 Contribution
 
-The chatbot uses the Deepseek API to generate responses. The API request is handled in `ChatController.php`:
+1. Fork du projet.
+2. Création d’une branche :
 
-```php
-$response = Http::timeout(60)
-    ->withHeaders([
-        'Authorization' => 'Bearer ' . config('services.deepseek.key'),
-        'Content-Type' => 'application/json',
-    ])->post('https://api.deepseek.com/v1/chat/completions', [
-        'model' => 'deepseek-chat',
-        'messages' => [
-            [
-                'role' => 'user',
-                'content' => $question
-            ]
-        ],
-        'temperature' => 0.7,
-        'max_tokens' => 1000,
-    ]);
-```
-
----
-
-## Error Handling
-
-- **Invalid Questions**: If a question is not related to PHP or Laravel, the chatbot will respond with:
-  ```
-  Please ask questions related to PHP and Laravel only.
-  ```
-- **API Errors**: If the API request fails, the chatbot will respond with:
-  ```
-  Error processing your request. Please try again.
-  ```
-
----
-
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch:
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feature/ma-fonctionnalite
    ```
-3. Commit your changes:
+3. Commit des modifications :
+
    ```bash
-   git commit -m "Add your feature"
+   git commit -m "Ajout d’une fonctionnalité"
    ```
-4. Push to the branch:
+4. Push :
+
    ```bash
-   git push origin feature/your-feature-name
+   git push origin feature/ma-fonctionnalite
    ```
-5. Open a pull request.
+5. Pull request vers `main`.
 
 ---
 
-## License
+## 📄 Licence
 
-This project is open-source and available under the [MIT License](LICENSE).
-
----
-
-## Acknowledgments
-
-- [Laravel](https://laravel.com) for the PHP framework.
-- [Deepseek](https://deepseek.com) for the chatbot API.
-- [Marked.js](https://marked.js.org) for markdown parsing.
-- [Highlight.js](https://highlightjs.org) for syntax highlighting.
+Projet open source sous licence [MIT](LICENSE).
 
 ---
 
-## Support
+## 🙏 Remerciements
 
-For issues or questions, please [open an issue](https://github.com/yourusername/laravel-chatbot/issues) or contact the maintainer.
+* Laravel pour le framework
+* Tailwind CSS, Chart.js, et Jetstream/Breeze
 
 ---
 
-Enjoy using the Laravel Chatbot! 🚀
+## 📬 Support
+
+Pour toute question ou bug, merci d’ouvrir une [issue GitHub](https://github.com/sayouba2/smart_learning/issues).
+
+---
+
+Si tu veux que je génère ce fichier dans ton projet ou que je le personnalise encore plus (ex. avec ton nom GitHub, description précise ou captures d’écran), fais-le-moi savoir.
