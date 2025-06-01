@@ -205,4 +205,3 @@ Pour toute question ou bug, merci d’ouvrir une [issue GitHub](https://github.c
 
 ---
 
-Si tu veux que je génère ce fichier dans ton projet ou que je le personnalise encore plus (ex. avec ton nom GitHub, description précise ou captures d’écran), fais-le-moi savoir.
