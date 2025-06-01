@@ -2,6 +2,8 @@
 
 Une plateforme d’e-learning intelligente construite avec Laravel 11. Elle permet aux étudiants d’apprendre à leur rythme, aux enseignants de gérer leurs cours, et aux administrateurs de superviser l’ensemble. Le système inclut un tableau de bord personnalisé selon le rôle et des fonctionnalités interactives comme les quiz, devoirs et certificats.
 
+> 🚧 **Projet développé conjointement par [@sayouba2](https://github.com/sayouba2) et [@HichamOuteha)](https://github.com/HichamOuteha)**
+
 ---
 
 ## 🚀 Fonctionnalités principales
@@ -22,8 +24,7 @@ Une plateforme d’e-learning intelligente construite avec Laravel 11. Elle perm
 * Node.js & npm
 * MySQL 5
 * Laravel 11
-* xampp
-
+* XAMPP
 
 ---
 
@@ -101,9 +102,9 @@ Une plateforme d’e-learning intelligente construite avec Laravel 11. Elle perm
 
 Le système utilise Laravel Breeze avec des redirections conditionnelles selon le rôle :
 
-* `admin/dashboard`
-* `teacher/dashboard`
-* `student/dashboard`
+* `/admin/dashboard`
+* `/teacher/dashboard`
+* `/student/dashboard`
 
 Les rôles sont attribués lors de l’inscription.
 
@@ -119,7 +120,7 @@ smart-learning/
 │   │   ├── Admin/
 │   │   ├── Teacher/
 │   │   ├── Student/
-│   │   └── ContactController.php, AboutController, StudentController ...
+│   │   └── ContactController.php, AboutController.php, StudentController.php ...
 │   ├── Models/
 │   │   ├── User.php
 │   │   ├── Course.php
@@ -140,12 +141,13 @@ smart-learning/
 ├── composer.json
 ├── package.json
 └── vite.config.js
+```
 
 ---
 
 ## 📊 Graphiques dynamiques
 
-Utilisation de `Chart.js`  pour afficher :
+Utilisation de `Chart.js` pour afficher :
 
 * Cours les plus populaires
 * Inscriptions par mois
@@ -156,8 +158,6 @@ Utilisation de `Chart.js`  pour afficher :
 
 ## ✅ Tests
 
-Les tests peuvent être lancés via :
-
 ```bash
 php artisan test
 ```
@@ -167,21 +167,25 @@ php artisan test
 ## 🤝 Contribution
 
 1. Fork du projet.
-2. Création d’une branche :
+
+2. Créer une branche :
 
    ```bash
    git checkout -b feature/ma-fonctionnalite
    ```
-3. Commit des modifications :
+
+3. Commit :
 
    ```bash
    git commit -m "Ajout d’une fonctionnalité"
    ```
+
 4. Push :
 
    ```bash
    git push origin feature/ma-fonctionnalite
    ```
+
 5. Pull request vers `main`.
 
 ---
@@ -195,13 +199,11 @@ Projet open source sous licence [MIT](LICENSE).
 ## 🙏 Remerciements
 
 * Laravel pour le framework
-* Tailwind CSS, Chart.js, et Jetstream/Breeze
+* Tailwind CSS, Chart.js, Jetstream/Breeze
 
 ---
 
 ## 📬 Support
 
 Pour toute question ou bug, merci d’ouvrir une [issue GitHub](https://github.com/sayouba2/smart_learning/issues).
-
----
 
