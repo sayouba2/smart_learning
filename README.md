@@ -58,7 +58,7 @@ Une plateforme d’e-learning intelligente construite avec Laravel 11. Elle perm
 5. **Configurer l’environnement `.env`**
 
    ```env
-   APP_NAME="Smart Learning"
+   APP_NAME="elearning"
    APP_URL=http://localhost:8000
 
    DB_CONNECTION=mysql
