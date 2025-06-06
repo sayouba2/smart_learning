@@ -26,7 +26,10 @@ class Enrollment extends Pivot
     {
         return $this->belongsTo(User::class);
     }
-
+    public function student()
+    {
+        return $this->belongsTo(User::class);
+    }
     /**
      * Le cours auquel l'utilisateur est inscrit.
      */
